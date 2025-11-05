@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Itens de Solução/">
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="LinkShortener.Application/LinkShortener.Application.csproj" />
+  <Project Path="LinkShortener.Domain/LinkShortener.Domain.csproj" />
+  <Project Path="LinkShortener.Infrastructure/LinkShortener.Infrastructure.csproj" />
+  <Project Path="LinkShortener.Presentation/LinkShortener.Presentation.csproj" />
+</Solution>
