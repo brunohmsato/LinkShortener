@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.RateLimiting;
-using System.Threading.RateLimiting;
+﻿using System.Threading.RateLimiting;
 
 namespace LinkShortener.Presentation.Services;
 
@@ -9,18 +8,28 @@ public static class LimiterService
     {
         services.AddRateLimiter(options =>
         {
-            options.AddFixedWindowLimiter("create-link", opt =>
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = 100,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0
+                    }));
+
+            options.OnRejected = (context, token) =>
             {
-                opt.Window = TimeSpan.FromMinutes(1);
-                opt.PermitLimit = 20;
-                opt.QueueLimit = 0;
-            });
+                context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                context.HttpContext.Response.WriteAsync("Too many requests. Try again later.");
+                return ValueTask.CompletedTask;
+            };
 
             options.AddPolicy("dynamic-policy", httpContext =>
             {
                 if (httpContext.User.Identity?.IsAuthenticated == true)
                 {
-                    var userId = httpContext.User.FindFirst("idUsuario")?.Value;
+                    var userId = httpContext.User.FindFirst("jti")?.Value;
 
                     if (!string.IsNullOrEmpty(userId))
                     {

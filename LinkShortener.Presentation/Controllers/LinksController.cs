@@ -28,7 +28,7 @@ public class LinksController(ILinkService service, IHttpContextAccessor accessor
     }
 
     [HttpPost]
-    [EnableRateLimiting("create-link")]
+    [EnableRateLimiting("dynamic-policy")]
     public async Task<IActionResult> Create([FromBody] CreateLinkRequest req, CancellationToken ct)
     {
         if (!Uri.TryCreate(req.TargetUrl, UriKind.Absolute, out _))
