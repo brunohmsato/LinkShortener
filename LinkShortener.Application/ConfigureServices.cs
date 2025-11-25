@@ -10,6 +10,7 @@ public static class ConfigureServices
     {
         services.AddScoped<ILinkService, LinkService>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IQrCodeService, QrCodeService>();
 
         return services;
     }
