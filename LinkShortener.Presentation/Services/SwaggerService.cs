@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿
+using Microsoft.OpenApi;
 
 namespace LinkShortener.Presentation.Services;
 
@@ -27,7 +28,7 @@ public static class SwaggerService
                 //TermsOfService = new Uri("https://www.seusite.com/termos")
             });
 
-            var securityScheme = new OpenApiSecurityScheme
+            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
                 Description = "Insira o token JWT: {seu_token}",
@@ -35,27 +36,11 @@ public static class SwaggerService
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            };
+            });
 
-            options.AddSecurityDefinition("Bearer", securityScheme);
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
             {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
+                [new OpenApiSecuritySchemeReference("bearer", document)] = []
             });
 
         });

@@ -9,14 +9,15 @@ namespace LinkShortener.Application.Services;
 
 public class LinkService(
     ILinkRepository links,
+    IQrCodeService qrCodeService,
     IClickEventRepository clicks,
     IUnitOfWork uow) : ILinkService
 {
     public async Task<LinkResponse> CreateAsync(CreateLinkRequest req, Func<string> baseUrl, CancellationToken ct)
     {
-        var code = string.IsNullOrWhiteSpace(req.CustomCode) ?
-            await GenerateUniqueCode(ct) :
-            await EnsureUnique(req.CustomCode!, ct);
+        var code = string.IsNullOrWhiteSpace(req.CustomCode)
+            ? await GenerateUniqueCode(ct)
+            : await EnsureUnique(req.CustomCode!, ct);
 
         var link = new Link
         {
@@ -29,8 +30,22 @@ public class LinkService(
         await uow.SaveChangesAsync(ct);
 
         var shortUrl = $"{baseUrl().TrimEnd('/')}/{code}";
-        return new LinkResponse(link.Id, link.Code, shortUrl, link.TargetUrl, link.CreatedAt, link.ExpiresAt);
+
+        var qrBytes = qrCodeService.Generate(shortUrl);
+        link.QrCode = qrBytes;
+
+        await uow.SaveChangesAsync(ct);
+
+        return new LinkResponse(
+            link.Id,
+            link.Code,
+            shortUrl,
+            link.TargetUrl,
+            link.CreatedAt,
+            link.ExpiresAt
+        );
     }
+
 
     public Task<Link?> GetByCodeAsync(string code, CancellationToken ct) =>
         links.GetByCodeAsync(code, ct);
@@ -103,6 +118,27 @@ public class LinkService(
 
 
         return new StatsResponse(link.Id, link.Code, total, byDay, topRef, topSource, topCampaign);
+    }
+
+    public async Task<byte[]?> GetQrCodeAsync(Guid id, Func<string> baseUrl, CancellationToken ct)
+    {
+        var link = await links.GetByIdAsync(id, ct);
+        if (link is null || !link.IsActive || (link.ExpiresAt is not null && link.ExpiresAt < DateTime.UtcNow))
+            return null;
+
+        // se já existe no banco
+        if (link.QrCode is not null && link.QrCode.Length > 0)
+            return link.QrCode;
+
+        // gera caso ainda não exista
+        var shortUrl = $"{baseUrl().TrimEnd('/')}/api/Redirect/{link.Code}";
+        var qr = qrCodeService.Generate(shortUrl);
+
+        link.QrCode = qr;
+
+        await uow.SaveChangesAsync(ct);
+
+        return qr;
     }
 
     private async Task<string> GenerateUniqueCode(CancellationToken ct)

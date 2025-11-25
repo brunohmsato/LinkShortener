@@ -9,4 +9,5 @@ public interface ILinkService
     Task<Link?> GetByCodeAsync(string code, CancellationToken ct);
     Task RecordClickAsync(Link link, string? referrer, string? userAgent, string? ip, IDictionary<string, string?> utm, CancellationToken ct);
     Task<StatsResponse> GetStatsAsync(Guid linkId, CancellationToken ct);
+    Task<byte[]?> GetQrCodeAsync(Guid id, Func<string> baseUrl, CancellationToken ct);
 }
