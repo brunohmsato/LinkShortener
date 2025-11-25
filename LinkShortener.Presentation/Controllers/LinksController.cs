@@ -9,9 +9,10 @@ namespace LinkShortener.Presentation.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class LinksController(ILinkService service, IHttpContextAccessor accessor) : ControllerBase
+public class LinksController(ILinkService service, IHttpContextAccessor accessor, IQrCodeService qrCodeService) : ControllerBase
 {
     private readonly ILinkService _service = service;
+    private readonly IQrCodeService _qrCodeService = qrCodeService;
 
     [HttpGet("stats/{id:guid}")]
     public async Task<IActionResult> GetStats([FromRoute] Guid id, CancellationToken ct)
@@ -25,6 +26,20 @@ public class LinksController(ILinkService service, IHttpContextAccessor accessor
         {
             return NotFound();
         }
+    }
+
+    [HttpGet("{id:Guid}/qrcode")]
+    [EnableRateLimiting("dynamic-policy")]
+    public async Task<IActionResult> GetQrCode([FromRoute] Guid id, CancellationToken ct)
+    {
+        string BaseUrl() => $"{Request.Scheme}://{Request.Host}";
+
+        var qr = await _service.GetQrCodeAsync(id, BaseUrl, ct);
+
+        if (qr is null)
+            return NotFound("QR Code não encontrado para este link.");
+
+        return File(qr, "image/png");
     }
 
     [HttpPost]
