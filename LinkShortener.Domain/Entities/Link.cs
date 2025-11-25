@@ -9,6 +9,7 @@ public class Link
     public DateTime? ExpiresAt { get; set; }
     public string? OwnerUserId { get; set; }
     public bool IsActive { get; set; } = true;
+    public byte[]? QrCode { get; set; }
 
     public ICollection<ClickEvent> Clicks { get; set; } = new List<ClickEvent>();
 }
