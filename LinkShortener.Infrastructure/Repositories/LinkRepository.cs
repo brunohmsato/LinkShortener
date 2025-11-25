@@ -16,6 +16,6 @@ public class LinkRepository(AppDbContext db) : ILinkRepository
     public Task<Link?> GetByCodeAsync(string code, CancellationToken ct) =>
         db.Links.FirstOrDefaultAsync(x => x.Code == code && x.IsActive, ct);
 
-    public Task<Link> GetByIdAsync(Guid id, CancellationToken ct) =>
-        db.Links.FirstAsync(x => x.Id == id, ct);
+    public Task<Link?> GetByIdAsync(Guid id, CancellationToken ct) =>
+        db.Links.FirstOrDefaultAsync(x => x.Id == id, ct);
 }
