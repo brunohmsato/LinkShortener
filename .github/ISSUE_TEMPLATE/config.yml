@@ -1,1 +1,8 @@
 blank_issues_enabled: true
+contact_links:
+  - name: 📥 Pedido sem projeto definido ou de cliente
+    url: https://github.com/brunohmsato/solicitacoes/issues/new/choose
+    about: Use o repositório central de solicitações.
+  - name: 📋 Planejamento (Project)
+    url: https://github.com/users/brunohmsato/projects/8
+    about: Quadro com tudo o que está em andamento nos projetos.

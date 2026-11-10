@@ -1,6 +1,7 @@
 name: 🐛 Bug
 description: Algo não funciona como deveria
 labels: ["bug"]
+projects: ["brunohmsato/8"]
 body:
   - type: textarea
     id: atual
