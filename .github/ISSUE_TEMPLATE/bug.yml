@@ -1,0 +1,43 @@
+name: 🐛 Bug
+description: Algo não funciona como deveria
+labels: ["bug"]
+body:
+  - type: textarea
+    id: atual
+    attributes:
+      label: O que aconteceu?
+      description: Comportamento atual, incluindo status HTTP e mensagem, se houver.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que era esperado?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduzir
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. POST /api/links com { "targetUrl": "https://..." }
+        2. Acessar o shortUrl retornado
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: prioridade
+    attributes:
+      label: Prioridade
+      options:
+        - Alta
+        - Média
+        - Baixa
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs ou contexto
+      description: Cole aqui logs, respostas da API ou prints.
+      render: shell
