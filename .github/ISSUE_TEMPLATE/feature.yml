@@ -1,0 +1,33 @@
+name: ✨ Funcionalidade ou melhoria
+description: Ideia nova ou melhoria em algo que já existe
+labels: ["enhancement"]
+projects: ["brunohmsato/8"]
+body:
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: Qual problema isso resolve ou o que passa a ser possível?
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Proposta
+      description: Como você imagina a solução (endpoints, telas, mudanças no modelo).
+  - type: textarea
+    id: pronto
+    attributes:
+      label: Critério de pronto
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: dropdown
+    id: prioridade
+    attributes:
+      label: Prioridade
+      options:
+        - Alta
+        - Média
+        - Baixa
